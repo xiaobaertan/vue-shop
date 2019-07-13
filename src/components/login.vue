@@ -6,7 +6,7 @@
                 <img src="../assets/logo.png" alt="">
             </div>
             <!-- 登录表单区域 -->
-            <el-form :model="loginForm" :rules='loginFormRules' label-width="0px" class="login_form">
+            <el-form ref="loginFormRef" :model="loginForm" :rules='loginFormRules' label-width="0px" class="login_form">
                 <!-- 用户名 -->
                 <el-form-item prop="username">
                     <el-input prefix-icon="iconfont icon-user" v-model='loginForm.username'></el-input>
@@ -17,21 +17,22 @@
                 </el-form-item>
                 <!-- 按钮区域 -->
                 <el-form-item class="btns">
-                    <el-button type="primary">登录</el-button>
-                    <el-button type="info">重置</el-button>
+                    <el-button type="primary" @click="login">登录</el-button>
+                    <el-button type="info" @click="resetLoginForm">重置</el-button>
                 </el-form-item>
             </el-form>
         </div>
     </div>
 </template>
 <script>
+import { log } from 'util';
 export default {
     data(){
         return {
             // 这是登录表单的数据绑定对象
             loginForm: {
-                username: '',
-                password: ''
+                username: 'admin',
+                password: '123456'
             },
             // 这是表单的验证规则对象
             loginFormRules: {
@@ -47,6 +48,21 @@ export default {
             }
         }
         
+    },
+    methods: {
+        resetLoginForm() {
+            this.$refs.loginFormRef.resetFields()
+        },
+        login() {
+            this.$refs.loginFormRef.validate(async valid => {
+                if(!valid) return;
+                const {data: res} = await this.$http.post('login', this.loginForm);
+                if(res.meta.status != 200) return this.$message.error("登录失败")
+                this.$message.success("登录成功")
+                window.sessionStorage.setItem("token", res.data.token)
+                this.$router.push("/home")
+            })
+        }
     }
 }
 </script>
