@@ -172,8 +172,15 @@ export default {
           })
         })
     },
-    async addRole() {
-      // const { data: res } = await this.$http.
+    async addRole() { 
+      const { data: res } = await this.$http.post('roles', this.roleInfo)
+      console.log(res);
+      
+      if(res.meta.status != 201) return this.$message.error(res.meta.msg)
+      this.$message.success(res.meta.msg)
+      this.getRolseList()
+      this.isDialog = false
+      
     },
     async removeRight(role, rightId) {
       const confirmResult = await this.$confirm(
