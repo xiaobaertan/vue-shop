@@ -6,30 +6,61 @@
         <img src="../assets/logo.png" alt />
       </div>
       <!-- 用户表单信息 -->
-      <el-form ref="form" :model="form" label-width="0px" class="form_box">
-        <el-form-item>
-          <el-input prefix-icon="el-icon-user-solid" v-model="name"></el-input>
+      <el-form ref="loginFormRef" :model="loginForm" label-width="0px" class="form_box" :rules="loginFormRules">
+        <el-form-item prop="username">
+          <el-input prefix-icon="el-icon-user-solid" v-model="loginForm.username"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input  prefix-icon="el-icon-lock" v-model="password" show-password></el-input>
+        <el-form-item prop="password">
+          <el-input prefix-icon="el-icon-lock" v-model="loginForm.password" show-password></el-input>
         </el-form-item>
         <el-form-item class="btns">
-            <el-button type="primary">登录</el-button>
-            <el-button type="info">重置</el-button>
+          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="info" @click="resetLoginForm">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 <script>
+import { log } from 'util'
 export default {
-    data(){
-        return {
-            name: '小巴尔坦',
-            password: 123
-        }
+  data() {
+    return {
+      // 这是登录表单的数据绑定对象
+      loginForm: {
+        username: 'admin',
+        password: '123456'
+      },
+      // 这是表单的验证规则对象
+      loginFormRules: {
+        // 验证用户名是否合法
+        username: [
+          { required: true, message: '请输入登录名称', trigger: 'blur' },
+          { min: 3, max: 8, message: '长度在 3 到 8 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入登录密码', trigger: 'blur' },
+          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+        ]
+      }
     }
-};
+  },
+  methods: {
+    resetLoginForm() {
+      this.$refs.loginFormRef.resetFields()
+    },
+    login() {
+      this.$refs.loginFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('login', this.loginForm)
+        if (res.meta.status != 200) return this.$message.error('登录失败')
+        this.$message.success('登录成功')
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home')
+      })
+    }
+  }
+}
 </script>
 <style lang="less" scoped>
 .login_container {
@@ -67,15 +98,15 @@ export default {
   }
 }
 .form_box {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 0 20px;
-    box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 .btns {
-    display: flex;
-    justify-content: flex-end;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
 
