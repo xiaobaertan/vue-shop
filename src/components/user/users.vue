@@ -52,7 +52,7 @@
         :total="total"
       ></el-pagination>
     </el-card>
-    <!-- 添加用户对话框123 -->
+    <!-- 添加用户对话框 -->
     <el-dialog title="添加用户" :visible.sync="addDialog" width="50%" @close="addDialogClosed">
       <!-- 内容主体区域 -->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
