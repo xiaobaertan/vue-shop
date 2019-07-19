@@ -172,15 +172,14 @@ export default {
           })
         })
     },
-    async addRole() { 
+    async addRole() {
       const { data: res } = await this.$http.post('roles', this.roleInfo)
-      console.log(res);
-      
-      if(res.meta.status != 201) return this.$message.error(res.meta.msg)
+      console.log(res)
+
+      if (res.meta.status != 201) return this.$message.error(res.meta.msg)
       this.$message.success(res.meta.msg)
       this.getRolseList()
       this.isDialog = false
-      
     },
     async removeRight(role, rightId) {
       const confirmResult = await this.$confirm(
@@ -223,7 +222,7 @@ export default {
     async allotRights() {
       const keys = [
         ...this.$refs.treeRef.getCheckedKeys(),
-        ...this.$refs.treeRef.getHalfCheckedNodes()
+        ...this.$refs.treeRef.getHalfCheckedKeys()
       ]
       console.log(keys)
       const idStr = keys.join(',')
